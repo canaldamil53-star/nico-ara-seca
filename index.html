@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lembrador do Nico</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #fdbb2d;
+            padding-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            color: #fdbb2d;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            color: #fdbb2d;
+            margin: 20px 0 10px;
+        }
+        
+        .controle-status {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: rgba(26, 42, 108, 0.5);
+            border-radius: 10px;
+        }
+        
+        .controle-img {
+            width: 200px;
+            height: 150px;
+            background-color: #333;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 5rem;
+        }
+        
+        .bateria {
+            width: 100%;
+            height: 30px;
+            background-color: #333;
+            border-radius: 15px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .nivel-bateria {
+            height: 100%;
+            width: 20%;
+            background-color: #b21f1f;
+            border-radius: 15px;
+            transition: width 0.5s;
+        }
+        
+        .carregar-btn {
+            background-color: #fdbb2d;
+            color: #1a2a6c;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+        
+        .carregar-btn:hover {
+            background-color: #ffcc44;
+            transform: scale(1.05);
+        }
+        
+        .mensagens {
+            margin: 20px 0;
+        }
+        
+        .mensagem {
+            background-color: rgba(178, 31, 31, 0.3);
+            border-left: 4px solid #fdbb2d;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .mensagem p {
+            font-style: italic;
+            margin-bottom: 5px;
+        }
+        
+        .autor {
+            text-align: right;
+            font-weight: bold;
+            color: #fdbb2d;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #ccc;
+            border-top: 1px solid #444;
+            padding-top: 15px;
+        }
+        
+        .aviso {
+            background-color: rgba(253, 187, 45, 0.2);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .conquistas {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .conquista {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .conquista.bloqueada {
+            opacity: 0.5;
+            filter: grayscale(1);
+        }
+        
+        .conquista h3 {
+            color: #fdbb2d;
+            margin-bottom: 10px;
+        }
+        
+        .conquista .icone {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        
+        .conquista .descricao {
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .conquista .progresso {
+            height: 8px;
+            background-color: #333;
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .conquista .barra-progresso {
+            height: 100%;
+            background-color: #fdbb2d;
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .controle-img {
+                width: 150px;
+                height: 120px;
+                font-size: 4rem;
+            }
+            
+            .conquistas {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Lembrador do Nico</h1>
+            <p>Para o cara mais "seca" do Reta não ficar na mão na hora do game!</p>
+        </header>
+        
+        <div class="controle-status">
+            <div class="controle-img">🎮</div>
+            <h2>Status do Controle</h2>
+            <div class="bateria">
+                <div class="nivel-bateria" id="nivelBateria"></div>
+            </div>
+            <p id="statusBateria">Bateria fraca! Carregue o controle, Nico!</p>
+            <button class="carregar-btn" id="btnCarregar">Carregar Controle</button>
+        </div>
+        
+        <div class="aviso">
+            <p>Nico, o Reta manda lembranças! Não esquece de carregar o controle!</p>
+        </div>
+        
+        <div class="mensagens">
+            <h2>O que o povo do Reta fala:</h2>
+            
+            <div class="mensagem">
+                <p>"Nico, tu é seco mesmo, hein! Toda vez que a gente vai jogar, o teu controle tá descarregado!"</p>
+                <div class="autor">- Darlan</div>
+            </div>
+            
+            <div class="mensagem">
+                <p>"Cara, tu é o maior comedor de frango frito da Reta! Mas isso não adianta se o controle do videogame tá sempre morto!"</p>
+                <div class="autor">- Célio</div>
+            </div>
+            
+            <div class="mensagem">
+                <p>"Nico, o matador de butuca da Tapera! Mas e aí, quando que tu vai matar a bateria do controle?"</p>
+                <div class="autor">- Vitor</div>
+            </div>
+        </div>
+        
+        <div class="conquistas-section">
+            <h2>Conquistas do Nico</h2>
+            <div class="conquistas">
+                <div class="conquista" id="conquista-frango">
+                    <div class="icone">🍗</div>
+                    <h3>Comedor de Frango Frito</h3>
+                    <div class="descricao">Comeu frango frito 10 vezes na Reta</div>
+                    <div class="progresso">
+                        <div class="barra-progresso" id="progresso-frango"></div>
+                    </div>
+                </div>
+                
+                <div class="conquista" id="conquista-butuca">
+                    <div class="icone">🦟</div>
+                    <h3>Matador de Butuca</h3>
+                    <div class="descricao">Matou 50 butucas na Tapera</div>
+                    <div class="progresso">
+                        <div class="barra-progresso" id="progresso-butuca"></div>
+                    </div>
+                </div>
+                
+                <div class="conquista bloqueada" id="conquista-controle">
+                    <div class="icone">🔋</div>
+                    <h3>Carregador de Controle</h3>
+                    <div class="descricao">Carregou o controle 5 vezes sem esquecer</div>
+                    <div class="progresso">
+                        <div class="barra-progresso" id="progresso-controle"></div>
+                    </div>
+                </div>
+                
+                <div class="conquista bloqueada" id="conquista-seco">
+                    <div class="icone">🏜</div>
+                    <h3>Cara Seca</h3>
+                    <div class="descricao">Foi chamado de seco 20 vezes</div>
+                    <div class="progresso">
+                        <div class="barra-progresso" id="progresso-seco"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Site oficial do Nico - O cara mais seco do Reta, São Francisco do Sul</p>
+            <p>Não esquece de carregar o controle, Nico!</p>
+        </footer>
+    </div>
+
+    <script>
+        // Elementos do DOM
+        const nivelBateria = document.getElementById('nivelBateria');
+        const statusBateria = document.getElementById('statusBateria');
+        const btnCarregar = document.getElementById('btnCarregar');
+        
+        // Elementos das conquistas
+        const progressoFrango = document.getElementById('progresso-frango');
+        const progressoButuca = document.getElementById('progresso-butuca');
+        const progressoControle = document.getElementById('progresso-controle');
+        const progressoSeco = document.getElementById('progresso-seco');
+        
+        // Estado da bateria
+        let bateria = 20;
+        let carregamentos = 0;
+        
+        // Atualizar a exibição da bateria
+        function atualizarBateria() {
+            nivelBateria.style.width = bateria + '%';
+            
+            if (bateria < 20) {
+                nivelBateria.style.backgroundColor = '#b21f1f';
+                statusBateria.textContent = 'Bateria crítica! Carregue URGENTE, Nico!';
+            } else if (bateria < 50) {
+                nivelBateria.style.backgroundColor = '#fdbb2d';
+                statusBateria.textContent = 'Bateria baixa! Melhor carregar, Nico!';
+            } else {
+                nivelBateria.style.backgroundColor = '#4CAF50';
+                statusBateria.textContent = 'Bateria boa! Pode jogar à vontade!';
+            }
+        }
+        
+        // Função para carregar a bateria
+        function carregarBateria() {
+            let carga = 0;
+            const intervalo = setInterval(() => {
+                carga += 5;
+                bateria = Math.min(100, carga);
+                atualizarBateria();
+                
+                if (bateria >= 100) {
+                    clearInterval(intervalo);
+                    carregamentos++;
+                    atualizarConquistas();
+                }
+            }, 200);
+        }
+        
+        // Função para descarregar a bateria com o tempo
+        function descarregarBateria() {
+            setInterval(() => {
+                if (bateria > 0) {
+                    bateria -= 1;
+                    atualizarBateria();
+                }
+            }, 5000);
+        }
+        
+        // Atualizar conquistas
+        function atualizarConquistas() {
+            // Conquista do frango (sempre ativa)
+            progressoFrango.style.width = '100%';
+            document.getElementById('conquista-frango').classList.remove('bloqueada');
+            
+            // Conquista da butuca (sempre ativa)
+            progressoButuca.style.width = '100%';
+            document.getElementById('conquista-butuca').classList.remove('bloqueada');
+            
+            // Conquista do controle (baseada em carregamentos)
+            const progressoControleValor = Math.min(100, (carregamentos / 5) * 100);
+            progressoControle.style.width = progressoControleValor + '%';
+            
+            if (carregamentos >= 5) {
+                document.getElementById('conquista-controle').classList.remove('bloqueada');
+            }
+            
+            // Conquista do seco (baseada em tempo no site)
+            const tempoNoSite = Math.min(20, Math.floor(performance.now() / 10000));
+            const progressoSecoValor = (tempoNoSite / 20) * 100;
+            progressoSeco.style.width = progressoSecoValor + '%';
+            
+            if (tempoNoSite >= 20) {
+                document.getElementById('conquista-seco').classList.remove('bloqueada');
+            }
+        }
+        
+        // Event listeners
+        btnCarregar.addEventListener('click', carregarBateria);
+        
+        // Inicialização
+        atualizarBateria();
+        descarregarBateria();
+        
+        // Atualizar conquistas periodicamente
+        setInterval(atualizarConquistas, 2000);
+    </script>
+</body>
+</html>
